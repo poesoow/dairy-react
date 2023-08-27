@@ -45,7 +45,7 @@
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.todo-list li input,
+.todo-list li input:not([type="checkbox"]),
 .todo-list li span {
   border: none;
   flex-grow: 1;
@@ -57,4 +57,9 @@
 }
 .todo-list .done {
   background-color: #1cb135;
+}
+
+.completed span,
+.completed input{
+  text-decoration: line-through;
 }

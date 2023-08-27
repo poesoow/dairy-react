@@ -4,6 +4,7 @@ import './Todolist.css';
 interface Task {
   id: number;
   text: string;
+  completed: boolean;
 }
 
 const TodoList: React.FC = () => {
@@ -14,7 +15,7 @@ const TodoList: React.FC = () => {
 
   const addTask = () => {
     if (inputValue.trim() !== '') {
-      setTasks([...tasks, { id: Date.now(), text: inputValue }]);
+      setTasks([...tasks, { id: Date.now(), text: inputValue, completed: false }]);
       setInputValue('');
     }
   };
@@ -22,6 +23,13 @@ const TodoList: React.FC = () => {
   const removeTask = (taskId: number) => {
     const newTasks = tasks.filter(task => task.id !== taskId);
     setTasks(newTasks);
+  };
+
+  const toggleComplete = (taskId: number) => {
+    const updatedTasks = tasks.map(task =>
+      task.id === taskId ? { ...task, completed: !task.completed } : task
+    );
+    setTasks(updatedTasks);
   };
 
   const startEditing = (taskId: number, taskText: string) => {
@@ -51,7 +59,12 @@ const TodoList: React.FC = () => {
       </div>
       <ul>
         {tasks.map(task => (
-          <li key={task.id}>
+          <li key={task.id} className={task.completed ? 'completed' : ''}>
+            <input
+              type="checkbox"
+              checked={task.completed}
+              onChange={() => toggleComplete(task.id)}
+            />
             {editingTaskId === task.id ? (
               <input
                 type="text"
@@ -61,12 +74,12 @@ const TodoList: React.FC = () => {
             ) : (
               <span>{task.text}</span>
             )}
-            <button className='delete' onClick={() => removeTask(task.id)}>삭제</button>
-            {editingTaskId === task.id ? (
-              <button className='done' onClick={() => finishEditing(task.id)}>완료</button>
-            ) : (
-              <button className='edit' onClick={() => startEditing(task.id, task.text)}>수정</button>
-            )}
+              <button className="delete" onClick={() => removeTask(task.id)}>삭제</button>
+              {editingTaskId === task.id ? (
+                <button className="done" onClick={() => finishEditing(task.id)}>완료</button>
+              ) : (
+                <button className="edit" onClick={() => startEditing(task.id, task.text)}>수정</button>
+              )}
           </li>
         ))}
       </ul>
