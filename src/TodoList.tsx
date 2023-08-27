@@ -7,11 +7,18 @@ interface Task {
   completed: boolean;
 }
 
+enum TaskFilter {
+  ALL = 'ALL',
+  COMPLETED = 'COMPLETED',
+  INCOMPLETE = 'INCOMPLETE'
+}
+
 const TodoList: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
   const [editedTaskText, setEditedTaskText] = useState('');
+  const [taskFilter, setTaskFilter] = useState<TaskFilter>(TaskFilter.ALL);
 
   useEffect(() => {
     // Load tasks from local storage on component mount
@@ -57,6 +64,15 @@ const TodoList: React.FC = () => {
     setEditedTaskText('');
   };
 
+  const filteredTasks = tasks.filter(task => {
+    if (taskFilter === TaskFilter.COMPLETED) {
+      return task.completed;
+    } else if (taskFilter === TaskFilter.INCOMPLETE) {
+      return !task.completed;
+    }
+    return true;
+  });
+
   return (
     <div className="todo-list">
       <h2>Todo List</h2>
@@ -67,9 +83,14 @@ const TodoList: React.FC = () => {
           onChange={e => setInputValue(e.target.value)}
         />
         <button onClick={addTask}>추가</button>
+        <select onChange={e => setTaskFilter(e.target.value as TaskFilter)}>
+          <option value={TaskFilter.ALL}>전체</option>
+          <option value={TaskFilter.COMPLETED}>완료</option>
+          <option value={TaskFilter.INCOMPLETE}>미완료</option>
+        </select>
       </div>
       <ul>
-        {tasks.map(task => (
+        {filteredTasks.map(task => (
           <li key={task.id} className={task.completed ? 'completed' : ''}>
             <input
               type="checkbox"
