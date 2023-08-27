@@ -1,20 +1,41 @@
 import React, { useState } from 'react';
 import './Todolist.css';
 
-const TodoList: React.FC = () => {
-  const [todos, setTodos] = useState<string[]>([]);
-  const [inputValue, setInputValue] = useState('');
+interface Task {
+  id: number;
+  text: string;
+}
 
-  const addTodo = () => {
+const TodoList: React.FC = () => {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [inputValue, setInputValue] = useState('');
+  const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
+  const [editedTaskText, setEditedTaskText] = useState('');
+
+  const addTask = () => {
     if (inputValue.trim() !== '') {
-      setTodos([...todos, inputValue]);
+      setTasks([...tasks, { id: Date.now(), text: inputValue }]);
       setInputValue('');
     }
   };
 
-  const removeTodo = (index: number) => {
-    const newTodos = todos.filter((_, i) => i !== index);
-    setTodos(newTodos);
+  const removeTask = (taskId: number) => {
+    const newTasks = tasks.filter(task => task.id !== taskId);
+    setTasks(newTasks);
+  };
+
+  const startEditing = (taskId: number, taskText: string) => {
+    setEditingTaskId(taskId);
+    setEditedTaskText(taskText);
+  };
+
+  const finishEditing = (taskId: number) => {
+    const updatedTasks = tasks.map(task =>
+      task.id === taskId ? { ...task, text: editedTaskText } : task
+    );
+    setTasks(updatedTasks);
+    setEditingTaskId(null);
+    setEditedTaskText('');
   };
 
   return (
@@ -26,13 +47,26 @@ const TodoList: React.FC = () => {
           value={inputValue}
           onChange={e => setInputValue(e.target.value)}
         />
-        <button onClick={addTodo}>추가</button>
+        <button onClick={addTask}>추가</button>
       </div>
       <ul>
-        {todos.map((todo, index) => (
-          <li key={index}>
-            {todo}
-            <button onClick={() => removeTodo(index)}>삭제</button>
+        {tasks.map(task => (
+          <li key={task.id}>
+            {editingTaskId === task.id ? (
+              <input
+                type="text"
+                value={editedTaskText}
+                onChange={e => setEditedTaskText(e.target.value)}
+              />
+            ) : (
+              <span>{task.text}</span>
+            )}
+            <button className='delete' onClick={() => removeTask(task.id)}>삭제</button>
+            {editingTaskId === task.id ? (
+              <button className='done' onClick={() => finishEditing(task.id)}>완료</button>
+            ) : (
+              <button className='edit' onClick={() => startEditing(task.id, task.text)}>수정</button>
+            )}
           </li>
         ))}
       </ul>
