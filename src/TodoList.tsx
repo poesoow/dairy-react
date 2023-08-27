@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Todolist.css';
 
 interface Task {
@@ -12,6 +12,17 @@ const TodoList: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
   const [editedTaskText, setEditedTaskText] = useState('');
+
+  useEffect(() => {
+    // Load tasks from local storage on component mount
+    const savedTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+    setTasks(savedTasks);
+  }, []);
+
+  useEffect(() => {
+    // Save tasks to local storage whenever tasks state changes
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }, [tasks]);
 
   const addTask = () => {
     if (inputValue.trim() !== '') {
@@ -74,12 +85,12 @@ const TodoList: React.FC = () => {
             ) : (
               <span>{task.text}</span>
             )}
-              <button className="delete" onClick={() => removeTask(task.id)}>삭제</button>
-              {editingTaskId === task.id ? (
-                <button className="done" onClick={() => finishEditing(task.id)}>완료</button>
-              ) : (
-                <button className="edit" onClick={() => startEditing(task.id, task.text)}>수정</button>
-              )}
+            <button className="delete" onClick={() => removeTask(task.id)}>삭제</button>
+            {editingTaskId === task.id ? (
+              <button className="done" onClick={() => finishEditing(task.id)}>완료</button>
+            ) : (
+              <button className="edit" onClick={() => startEditing(task.id, task.text)}>수정</button>
+            )}
           </li>
         ))}
       </ul>
