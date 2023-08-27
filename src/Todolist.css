@@ -52,6 +52,10 @@
   padding: 8px;
 }
 
+.todo-list li span.timestamp{
+  flex-grow: 0;
+}
+
 .todo-list .delete {
   background-color: #df2a2a;
 }

@@ -13,6 +13,11 @@ enum TaskFilter {
   INCOMPLETE = 'INCOMPLETE'
 }
 
+const formatDate = (timestamp: number): string => {
+  const date = new Date(timestamp);
+  return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+};
+
 const TodoList: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -106,6 +111,7 @@ const TodoList: React.FC = () => {
             ) : (
               <span>{task.text}</span>
             )}
+            <span className="timestamp">{formatDate(task.id)}</span>
             <button className="delete" onClick={() => removeTask(task.id)}>삭제</button>
             {editingTaskId === task.id ? (
               <button className="done" onClick={() => finishEditing(task.id)}>완료</button>
